@@ -21,6 +21,8 @@
 # Dependencies copied from teleop_twist_keyboard.py
 from __future__ import print_function
 import rospy
+from geometry_msgs.msgs import Twist
+import sys, select, termios, tty
 
 # ROS Dependencies copied from motor-controller-interface.py
 import math
@@ -57,23 +59,11 @@ if __name__ == '__main__':
     ros_ns = rospy.get_namespace()
     rospy.init_node('wifi_poll', anonymous = False)                 # name of the node 
     vel_pub = rospy.Publisher("cmd_vel", Twist, queue_size = 1)     # publishes to the cmd_vel
-
-    # TODO understand how get_param works and what it does
-    speed = rospy.get_param("~speed", 0.5)
-    turn = rospy.get_param("~turn", 1)
     
-    # TODO insert chip init/restart functions
+    # TODO insert chip init/restart functions (still needs write functionality)
 
-    # init the serial readers and writers
+    # init the serial readers
     serial_reader = initialize_wifi_chip_reader()
-    serial_writer = initialize_wifi_chip_writer()
-
-    # create variables to store movement data
-    x = 0
-    y = 0
-    z = 0
-    th = 0
-    status = 0
 
     # main loop
     try:
@@ -88,13 +78,10 @@ if __name__ == '__main__':
             # print("The command read is: ", app_cmd)
 
             # convert command into twist
-            # convertToTwist(app_cmd)
+            # twist = convertToTwist(app_cmd)
 
-            # create twist object, assign the correct movement bindings to the twist object, and publish the twist topic
-            twist = Twist()
-            twist.linear.x = x*speed; twist.linear.y = y*speed; twist.linear.z = z*speed
-            twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = th*turn
-            vel_pub.Publish(twist)
+            # publish twist to cmd_vel topic
+            # vel_pub.Publish(twist)
 
     except:
         # error handling
