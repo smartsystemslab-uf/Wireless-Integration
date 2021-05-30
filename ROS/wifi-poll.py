@@ -20,19 +20,13 @@
 
 # Dependencies copied from teleop_twist_keyboard.py
 from __future__ import print_function
-#import roslib; roslib.load_manifest('teleop_twist_keyboard')           # $$$ delete or replace this
 import rospy
-
-from geometry_msgs.msg import Twist
-import sys, select, termios, tty                                        # $$$ don't need termios? its for accessing keyboard buttons i think
 
 # ROS Dependencies copied from motor-controller-interface.py
 import math
 from math import sin, cos, pi                                           # 
 import re 
-import rospy
 import tf
-from geometry_msgs.msg import Twist
 
 # Core Dependencies
 import serial
@@ -47,51 +41,11 @@ Reading the WIFI Chip UART
 Press CTRL+C to quit.
 """
 
-# Globals
-# TODO figure out better cases for motion bindings
-moveBindings = {
-    'i':(1,0,0,0),
-    'o':(1,0,0,-1),
-    'j':(0,0,0,1),
-    'l':(0,0,0,-1),
-    'u':(1,0,0,1),
-    ',':(-1,0,0,0),
-    '.':(-1,0,0,1),
-    'm':(-1,0,0,-1),
-    'O':(1,-1,0,0),
-    'I':(1,0,0,0),
-    'J':(0,1,0,0),
-    'L':(0,-1,0,0),
-    'U':(1,1,0,0),
-    '<':(-1,0,0,0),
-    '>':(-1,-1,0,0),
-    'M':(-1,1,0,0),
-    't':(0,0,1,0),
-    'b':(0,0,-1,0),
-}
-
-speedBindings={
-    'q':(1.1,1.1),
-    'z':(.9,.9),
-    'w':(1.1,1),
-    'x':(.9,1),
-    'e':(1,1.1),
-    'c':(1,.9),
-}
-
 # Function Declarations 
 def initialize_wifi_chip_reader():
     # TODO figure the correct UART path
-    serial_reader = serial.Serial('read_path_uart', 115200, timout=0.05)
+    serial_reader = serial.Serial('/dev/ttyUL3', 115200, timout=0.05)
     return serial_reader
-
-def initialize_wifi_chip_writer():
-    # TODO figure out correct path
-    serial_writer = serial.Serial('write_path', 19200)
-    serial_writer.write('baud 115200\r'.encode())
-    serial_writer.close()
-    # TODO implement something similar to initialize_motor_controller_serial_writer
-    return serial_writer
 
 def vels(speed, turn):
     return "currently:\tspeed %s\tturn %s " % (speed,turn)
@@ -101,7 +55,7 @@ if __name__ == '__main__':
     
     # init ROS node to publish cmd_vel
     ros_ns = rospy.get_namespace()
-    rospy.init_node('wifi-packet-poller', anonymous = False)        # name of the node 
+    rospy.init_node('wifi_poll', anonymous = False)                 # name of the node 
     vel_pub = rospy.Publisher("cmd_vel", Twist, queue_size = 1)     # publishes to the cmd_vel
 
     # TODO understand how get_param works and what it does
