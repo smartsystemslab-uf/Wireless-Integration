@@ -16,29 +16,29 @@ port = 8001
 s.bind(('', port))
 print ("Socket binded to port %s\n" %(port))
 s.listen(1)
-print ("Socket is listening... Connect to the server via a mobile app\n")
-
+print ("Socket is listening... waiting for the ESP to connect\n")
 
 while True:
-    c, addr = s.accept()
-    print ('Got connection from', addr )
-    c.send('Thank you for connecting\n'.encode('utf-8'))
-    while True:
-        try:
-            data =c.recv(1024)
-            data =data.decode('utf8')
+    esp, ESP_IP = s.accept()
+    print ('Got connection from', ESP_IP )
+    esp.send('Thank you for connecting\n'.encode('utf-8'))
+    try:
+        data = esp.recv(1024)                                    # TODO this is going to be from the mobile app
+        data = data.decode('utf-8')
+        while True:
             print(data)
-            #convertToTwist(data) # TODO use imports to call function
             if not data:
-                print("Disconnected from ", addr)
+                print("Disconnected from ", ESP_IP)
                 break
-            c.send('Thank you for connecting\n'.encode('utf-8'))    # TODO for testing purposes
+            esp.send('This is test message A\n'.encode('utf-8'))      # TODO for testing purposes
+            esp.send('This is test message B\n'.encode('utf-8'))      # TODO for testing purposes
+            
 
-        except KeyboardInterrupt:
+    except KeyboardInterrupt:
             print("keyboard interrupted")
             s.close()
             exit()
-        except Exception as error:
+    except Exception as error:
             print("Failed to insert record into Laptop table {}".format(error))
             exit()
                                                                                   
