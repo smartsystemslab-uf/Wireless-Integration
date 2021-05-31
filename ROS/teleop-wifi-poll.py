@@ -22,6 +22,7 @@
 from __future__ import print_function
 import rospy
 from geometry_msgs.msgs import Twist
+from std_msgs.msg import String 
 import sys, select, termios, tty
 
 # ROS Dependencies copied from motor-controller-interface.py
@@ -74,14 +75,16 @@ if __name__ == '__main__':
         while (1):
             # TODO
             # read UART port periodically
-            # app_cmd = serial_reader.read()
-            # print("The command read is: ", app_cmd)
+            app_cmd = serial_reader.read()
+            print("The command read is: ", app_cmd)
 
             # convert command into twist
             # twist = convertToTwist(app_cmd)
 
             # publish twist to cmd_vel topic
             # vel_pub.Publish(twist)
+
+
 
     except:
         # error handling
