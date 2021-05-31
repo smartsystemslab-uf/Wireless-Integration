@@ -52,6 +52,7 @@ def vels(speed, turn):
 
 # main loop
 if __name__ == '__main__':
+    print('\n***********************************\nThis is the start of the main loop\n***********************************') # TODO for testing purposes
     
     # init ROS node to publish cmd_vel
     ros_ns = rospy.get_namespace()
@@ -69,19 +70,23 @@ if __name__ == '__main__':
     try:
         # print start messages
         print(msg)
-        print(vels(speed,turn))
+        #print(vels(speed,turn))
         
         while (1):
             # TODO
             # read UART port periodically
+            
+            
             app_cmd = serial_reader.read()
-            print("The command read is: ", app_cmd)
+            print('Data read from the serial port: ', app_cmd)
             
             # convert command into twist
             twist = convertToTwist(app_cmd)
+            print('App command has been converted into Twist object. It looks like:  ', twist)
 
             # publish twist to cmd_vel topic
             vel_pub.Publish(twist)
+            print('Just published the twist object.')
 
     except:
         # error handling
