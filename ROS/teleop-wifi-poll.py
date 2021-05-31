@@ -17,7 +17,7 @@
 # Dependencies copied from teleop_twist_keyboard.py
 from __future__ import print_function
 import rospy
-from geometry_msgs.msgs import Twist
+from geometry_msgs.msg import Twist
 from std_msgs.msg import String 
 import sys, select, termios, tty
 
@@ -44,7 +44,7 @@ Press CTRL+C to quit.
 # Function Declarations 
 def initialize_wifi_chip_reader():
     # TODO figure the correct UART path
-    serial_reader = serial.Serial(read_path, 115200, timout=0.05)
+    serial_reader = serial.Serial('/dev/ttyUL3', 115200, timeout=0.05)
     return serial_reader
 
 def vels(speed, turn):
@@ -57,12 +57,13 @@ if __name__ == '__main__':
     ros_ns = rospy.get_namespace()
     rospy.init_node('wifi_poll', anonymous = False)                 # name of the node 
     vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size = 1)     # publishes to the cmd_vel
-    
+    print('Node is initialized')
+
     # TODO insert chip init/restart functions (still needs write functionality)
 
     # init the serial readers
-    read_path = '/dev/ttyUL3'
     serial_reader = initialize_wifi_chip_reader()
+    print('Read path to UARTlite2 is initialized')
 
     # main loop
     try:
@@ -75,7 +76,7 @@ if __name__ == '__main__':
             # read UART port periodically
             app_cmd = serial_reader.read()
             print("The command read is: ", app_cmd)
-
+            
             # convert command into twist
             twist = convertToTwist(app_cmd)
 
@@ -88,8 +89,7 @@ if __name__ == '__main__':
 
 
     finally:
-        # just in case do it again
-        twist = Twist()
-        twist.linear.x = x*speed; twist.linear.y = y*speed; twist.linear.z = z*speed
-        twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = th*turn
+        # Stop the motor control just in case 
+        app_cmd = 'Stop\n'
+        twist = convertToTwist(app_cmd)
         vel_pub.Publish(twist)
