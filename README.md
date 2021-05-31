@@ -1,7 +1,7 @@
 # Wireless Integration of Zybo Z7 Arlobots 
 To implement wireless control of the robot:
 
-### Network Conditions
+## Network Conditions
 Ensure the mobile device, the server, and the ESP8266s are all running on the same local network
 TODO: Insert exact network settings
 
