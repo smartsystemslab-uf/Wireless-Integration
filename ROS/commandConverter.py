@@ -32,9 +32,7 @@ speedBindings={
 # Initiliaze the variables
 # TODO figure out what get_param does 
 speed = rospy.get_param("~speed", 0.5)
-print("Printing initial speed from get_param", speed)
 turn = rospy.get_param("~turn", 1.0)
-print("Printing initial turn from get_param", turn)
 
 x = 0
 y = 0
@@ -48,7 +46,9 @@ def convertToTwist(cmd):
         y = moveBindings[cmd][1]
         z = moveBindings[cmd][2]
         th = moveBindings[cmd][3]
-        print('x = ', x, ', ' , 'y = ', y, ', ', 'y = ', z, ', ', 'th = ', th, '\n')    # TODO just for testing purposes will remove
+        #print('x = ', x, ', ' , 'y = ', y, ', ', 'y = ', z, ', ', 'th = ', th, '\n')    # TODO just for testing purposes will remove
+    elif not cmd:
+        print('The received command is null')
     else:
         print('The word', cmd, 'does not have an associated moveBinding.')
 
@@ -57,15 +57,15 @@ def convertToTwist(cmd):
     twist = Twist()
     twist.linear.x = x*speed; twist.linear.y = y*speed; twist.linear.z = z*speed
     twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = th*turn
-    print(twist)
+    #print(twist)
     return twist
     
 
 # TODO for testing purposes only
-convertToTwist("Front\n")
-convertToTwist("Left\n")
-convertToTwist("Right\n")
-convertToTwist("Back\n")
-convertToTwist("Stop\n")
+#convertToTwist("Front\n")
+#convertToTwist("Left\n")
+#convertToTwist("Right\n")
+#convertToTwist("Back\n")
+#convertToTwist("Stop\n")
 #convertToTwist("Hi")    # shouldn't print anything
 #exit()
