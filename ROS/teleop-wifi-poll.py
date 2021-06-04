@@ -27,8 +27,7 @@ import sys, select, termios, tty
 # ROS Dependencies copied from motor-controller-interface.py
 import math
 from math import sin, cos, pi                                           # 
-import re 
-import tf
+import re
 
 # Core Dependencies
 import serial
@@ -48,15 +47,15 @@ Press CTRL+C to quit.
 
 # Associates the commands from the mobile to movement bindings using the format: 'CommandFromApp\n' : (x, y, z, th), 
 moveBindings = {
-    'Stop\n'        : (0,0,0,0),
-    'Front\n'       : (1,0,0,0),        # TODO change to "Forward"
-    'UpRight\n'     : (1,0,0,-1),
-    'Left\n'        : (0,0,0,1),
-    'Right\n'       : (0,0,0,-1),
-    'UpLeft\n'      : (1,0,0,1),
-    'Back\n'        : (-1,0,0,0),       # TODO change to "Backward"
-    'DownRight\n'   : (-1,0,0,1),
-    'DownLeft\n'    : (-1,0,0,-1),
+    'Stop'        : (0,0,0,0),
+    'Front'       : (1,0,0,0),        # TODO change to "Forward"
+    'UpRight'     : (1,0,0,-1),
+    'Left'        : (0,0,0,1),
+    'Right'       : (0,0,0,-1),
+    'UpLeft'      : (1,0,0,1),
+    'Back'        : (-1,0,0,0),       # TODO change to "Backward"
+    'DownRight'   : (-1,0,0,1),
+    'DownLeft'    : (-1,0,0,-1),
 }
 
 # Associates the commands from the mobile app to speed bindings
@@ -87,7 +86,7 @@ def convertToTwist(cmd):
         z = moveBindings[cmd][2]
         th = moveBindings[cmd][3]
         #print('x = ', x, ', ' , 'y = ', y, ', ', 'y = ', z, ', ', 'th = ', th, '\n')    # TODO just for testing purposes will remove
-    elif not cmd:
+    elif len(cmd) == 0:
         print('The received command is null')
     else:
         print('The word', cmd, 'does not have an associated moveBinding.')
@@ -134,20 +133,36 @@ if __name__ == '__main__':
         print(msg)
         print(vels(speed,turn))
         
+        app_cmd = 0
+        old_cmd = 0
         while (1):
-            # TODO
             # read UART port periodically
-            # trying dif values
             app_cmd = serial_reader.read(100)
-            print('Data read from the serial port: ', app_cmd)
+            #print('The length of', app_cmd, 'is', len(app_cmd))
+            app_cmd = app_cmd[0:len(app_cmd)-4] 
+            #print('The truncated length of', app_cmd, 'is', len(app_cmd))
+            
+            if len(app_cmd) > 0:
+                print('The app_cmd read from the serial port:', app_cmd, '. The old_cmd is:', old_cmd)
+                
+                # only convert and publish command if is NOT repeated, and NOT null
+                if app_cmd != old_cmd:
+                    print('app_cmd does not equal old_cmd AND app_cmd is not null')
+                
+                    # convert command into twist
+                    #print('app_cmd about to be converted:', app_cmd)
+                    #print('old_cmd:', old_cmd)
+                    twist = convertToTwist(app_cmd)
+                    print('app_cmd has been converted into Twist object. It looks like:', twist)
 
-            # convert command into twist
-            twist = convertToTwist(app_cmd)
-            print('App command has been converted into Twist object. It looks like:  ', twist)
+                    # publish twist to cmd_vel topic
+                    vel_pub.publish(twist)
+                    print('Just published the twist object.')
+                    old_cmd = app_cmd
 
-            # publish twist to cmd_vel topic
-            vel_pub.publish(twist)
-            print('Just published the twist object.')
+                    #for testing purposes - delay
+                    #print('2 sec delay')
+                    #time.sleep(2)
 
     except Exception as e:
         # error handling
