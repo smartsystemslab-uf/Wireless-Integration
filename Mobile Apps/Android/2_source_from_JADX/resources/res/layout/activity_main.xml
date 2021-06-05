@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="match_parent">
+    <EditText android:gravity="center_horizontal" android:id="@+id/ip" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Argo&apos;s Private IP" android:ems="10" android:inputType="textPersonName"/>
+    <Button android:id="@+id/connect" android:background="@android:color/holo_green_light" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Connect"/>
+    <Button android:id="@+id/front" android:background="@android:color/darker_gray" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="30dp" android:text="Front"/>
+    <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <Button android:id="@+id/left" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="left" android:layout_weight="1"/>
+        <Button android:id="@+id/right" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="right" android:layout_weight="1"/>
+    </LinearLayout>
+    <Button android:id="@+id/back" android:background="@android:color/darker_gray" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Back"/>
+    <Button android:id="@+id/stop" android:background="@android:color/holo_red_dark" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="30dp" android:text="stop"/>
+</LinearLayout>

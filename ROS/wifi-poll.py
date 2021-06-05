@@ -84,11 +84,11 @@ if __name__ == '__main__':
         while (1):
             # TODO
             # read UART port periodically
-                # Bobda say use polling or check an interrupt flag, or use daemon look it up
+            # app_cmd = serial_reader.read()
+            # print("The command read is: ", app_cmd)
 
-            # filter through packet for the velocity command
-
-            # convert velocity command into a movement binding
+            # convert command into twist
+            # convertToTwist(app_cmd)
 
             # create twist object, assign the correct movement bindings to the twist object, and publish the twist topic
             twist = Twist()
