@@ -11,12 +11,12 @@
 #               converts the command data into a ROS datatype, and publishes
 #               to the cmd_vel topic
 #
-# Notes:        lLook for constraint file something.xdc to find and available serial line
+# Notes:        Look for constraint file something.xdc to find and available serial line
 #               The one this uses PMOD JE using UL3 (uartlite 2) pins V13 U17 (see .xdc file)
 
 # Dependencies copied from teleop_twist_keyboard.py
 
-################################################## Dependencies ####################################################
+################################################## Function Dependencies ####################################################
 
 from __future__ import print_function
 import rospy
@@ -33,7 +33,6 @@ import re
 import serial
 import time
 import mmap
-#from commandConverter import convertToTwist        # see command-converter.py
 
 msg = """
 Starting WIFI Node...
@@ -43,7 +42,7 @@ Reading the WIFI Chip UART
 Press CTRL+C to quit.
 """
 
-################################################## Function Declarations ###########################################
+################################################## Function Declarations ####################################################
 
 # Associates the commands from the mobile to movement bindings using the format: 'CommandFromApp\n' : (x, y, z, th), 
 moveBindings = {
@@ -68,8 +67,7 @@ speedBindings={
     'c':(1,.9),
 }
 
-# Initiliaze the variables
-# TODO figure out what get_param does 
+# Initiliaze the variables - this just sets speed to .5 and turn to 1? not sure why this is needed
 speed = rospy.get_param("~speed", 0.5)
 turn = rospy.get_param("~turn", 1.0)
 
@@ -85,13 +83,11 @@ def convertToTwist(cmd):
         y = moveBindings[cmd][1]
         z = moveBindings[cmd][2]
         th = moveBindings[cmd][3]
-        #print('x = ', x, ', ' , 'y = ', y, ', ', 'y = ', z, ', ', 'th = ', th, '\n')    # TODO just for testing purposes will remove
     elif len(cmd) == 0:
         print('The received command is null')
     else:
         print('The word', cmd, 'does not have an associated moveBinding.')
 
-    #TODO convert x, y, z, th to Twist - need ROS
     # create twist object, assign the correct movement bindings to the twist object, and publish the twist topic
     twist = Twist()
     twist.linear.x = x*speed; twist.linear.y = y*speed; twist.linear.z = z*speed
@@ -107,16 +103,13 @@ def initialize_wifi_chip_reader():
 def vels(speed, turn):
     return "currently:\tspeed %s\tturn %s " % (speed,turn)
 
-####################################################################################################################
-
-
+#############################################################################################################################
 
 # main loop
 if __name__ == '__main__':
     
     # init ROS node to publish cmd_vel
-    print('\n***********************************\nThis is the start of the main loop\n***********************************\n') # TODO for testing purposes
-    ros_ns = rospy.get_namespace()
+    print('\n***********************************\nThis is the start of the main loop\n***********************************\n')
     vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size = 1)     # publishes to the cmd_vel
     rospy.init_node('wifi_poll', anonymous = False)                 # name of the node 
     print('Node is initialized')
@@ -136,38 +129,30 @@ if __name__ == '__main__':
         app_cmd = 0
         old_cmd = 0
         while (1):
-            # read UART port periodically
+            # read UART port periodically, and remove unnecessary chars (like \n)
             app_cmd = serial_reader.read(100)
-            #print('The length of', app_cmd, 'is', len(app_cmd))
             app_cmd = app_cmd[0:len(app_cmd)-4] 
-            #print('The truncated length of', app_cmd, 'is', len(app_cmd))
             
             if len(app_cmd) > 0:
-                print('The app_cmd read from the serial port:', app_cmd, '. The old_cmd is:', old_cmd)
+                print('The app_cmd read from the serial port:', app_cmd)
                 
                 # only convert and publish command if is NOT repeated, and NOT null
                 if app_cmd != old_cmd:
-                    print('app_cmd does not equal old_cmd AND app_cmd is not null')
+                    #print('app_cmd does not equal old_cmd AND app_cmd is not null')
                 
                     # convert command into twist
-                    #print('app_cmd about to be converted:', app_cmd)
-                    #print('old_cmd:', old_cmd)
                     twist = convertToTwist(app_cmd)
                     print('app_cmd has been converted into Twist object. It looks like:', twist)
 
                     # publish twist to cmd_vel topic
                     vel_pub.publish(twist)
-                    print('Just published the twist object.')
+                    print('Just published the command as a twist object.')
                     old_cmd = app_cmd
-
-                    #for testing purposes - delay
-                    #print('2 sec delay')
-                    #time.sleep(2)
 
     except Exception as e:
         # error handling
         print(e)
-        print("An error occurred while either while reading the serial port /dev/tty...")
+        print("An error occurred while reading the serial port /dev/ttyUL3")
 
 
     finally:
