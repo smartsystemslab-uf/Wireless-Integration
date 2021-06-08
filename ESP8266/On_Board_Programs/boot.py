@@ -21,12 +21,14 @@ print('Station (connnection to router) is active:',sta_if.active(),'\n')
 print('Access Point (other devices connect to ESP) is active:',ap_if.active(),'\n')
     
 #connect to the Wifi Network (router)
+
 if not sta_if.isconnected():
     print('connecting to network...\n')
-    sta_if.connect('TP-Link_SSL','72123379')
-    while not sta_if.isconnected(): #loop until connected
-        pass
-    print('ESP connected to network:',sta_if.isconnected(),'\n')
+    for x in range(500):
+        sta_if.connect('WeenieHutJr','colombia0323') #change based off your wifi
+        if sta_if.isconnected():
+            print('ESP connected to network:',sta_if.isconnected(),'\n')
+            break
     
 #checking IP address
 print(sta_if.ifconfig())
